@@ -26,7 +26,9 @@ you have inserted directly into your match.
 To let the script work correctly, you have to open two instances of League of Legends. <br>
 To do so you have to add the string "--allow-multiple-clients" (without the double quotation
 marks) in the "Target" field that you can find in the "Shortcut" tab of your link to the League
-of Legends executable.
+of Legends executable. <br>
+You can see from the image below where you have to add the line of code 
+(sorry for the italian):
 <p align="center">
   <img src="img/properties.png" />
 </p>

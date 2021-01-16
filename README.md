@@ -15,10 +15,12 @@ Still developing.
 ## How does it work
 Before executing the script, you have to create another RiotGames account (in the same region
 of the one you want to use for the reception / response of the messages). After creating it, 
-just send a friend request to your real account. After that, you can run the script.<br>
+just send a friend request to your real account. After that, you can run the script.
+
 You have to insert two usernames: the one to receive messages from (in the way it is stored 
 on the smartphone), and your personal Whatsapp name. <br>
-You can check your WhatsApp name from Menu (the three dots) -> Settings. <br>
+You can check your WhatsApp name from Menu (the three dots) -> Settings.
+
 You will be now able to receive (it is assumed that every message before your last one have 
 already been read) all the text messages (you will also able to reply to them) from the user
 you have inserted directly into your match.

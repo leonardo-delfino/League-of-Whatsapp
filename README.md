@@ -1,1 +1,1 @@
-# League-of-Whatsapp
+# League of WhatsApp

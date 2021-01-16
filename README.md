@@ -5,7 +5,7 @@ While playing is really hard to get distracted by your smartphone. As a result, 
 able to check the messages on messaging services like WhatsApp. <br>
 However, you can still receive a message from a friend inside the League's client (from a 
 RiotGames account), and it will be shown in game. You can also reply to that message directly
-from the match (by typing in the chat /msg "name of the account" your message). <br><br>
+from the match (by typing in the chat /r "name of the account" your message). <br>
 The purpose of this script is to allow the reception (real-time) and response of the messages
 from a WhatsApp contact during a League of Legends match.
 
@@ -23,7 +23,13 @@ You will be now able to receive (it is assumed that every message before your la
 already been read) all the text messages (you will also able to reply to them) from the user
 you have inserted directly into your match.
 
-
+To let the script work correctly, you have to open two instances of League of Legends. <br>
+To do so you have to add the string "--allow-multiple-clients" (without the double quotation
+marks) in the "Target" field that you can find in the "Shortcut" tab of your link to the League
+of Legends executable.
+<p align="center">
+  <img src="img/properties.png" />
+</p>
 
 ## Supported messaging services
 By now, only WhatsApp is supported. I plan to also add Telegram once the development for 

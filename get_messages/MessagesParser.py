@@ -18,8 +18,15 @@ class MessagesParser(object):
         try:
             self.driver = webdriver.Chrome(options=chrome_options)
         except WebDriverException:
-            print("ti puzza il webdriver")
-            sys.exit(0)
+            flag = input("[-] Make sure that you have Google Chrome installed. Is it? [yes/no] ")
+            if flag == "yes" or flag == "y":
+                print("[-] Check your Google Chrome's version and download the correct chromedriver manually from"
+                      " https://chromedriver.chromium.org/downloads and make sure that the chrome driver is in the"
+                      " same directory of the executable.")
+                sys.exit(0)
+            else:
+                print("[-] this script can't run without Google Chrome")
+                sys.exit(0)
 
         self.chat_name = chat_name
         self.ascii_chat_name = self.chat_name.encode('ascii', 'ignore').decode('ascii')

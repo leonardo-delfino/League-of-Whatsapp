@@ -46,7 +46,7 @@ Whatsapp is finished.
  * Send the messages to a RiotGames account;
  * Send the messages from the RiotGames account to your personal account;
  * Reply to the messages directly from the match;
- * Send the messages from the RiotGames account back to the WhatsApp contact;
+ * Send the messages from the RiotGames account back to the WhatsApp contact.
 
 ## License
 [MIT license](https://choosealicense.com/licenses/mit/).

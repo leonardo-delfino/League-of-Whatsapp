@@ -3,6 +3,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import TimeoutException
 import time
 import sys
 
@@ -34,43 +35,33 @@ class MessagesParser(object):
         self.ascii_personal_alias = self.personal_alias.encode('ascii', 'ignore').decode('ascii')
 
         self.driver.get("https://web.whatsapp.com/")
-        self.wait = WebDriverWait(self.driver, 600)
         xpath_arg = '//span[@title = "{}"]'.format(chat_name)
-        contact = self.wait.until(EC.presence_of_element_located((By.XPATH, xpath_arg)))
+        contact = None
+        try:
+            contact = WebDriverWait(self.driver, 60).until(EC.presence_of_element_located((By.XPATH, xpath_arg)))
+        except TimeoutException:
+            print("[-] The username can't be found.")
+            exit(-1)
         contact.click()
 
         self.messages = []
+        self.last_message = None
         self.replies = []
 
     def get_messages(self):
         time.sleep(3)
-        labels = self.driver.find_elements_by_xpath(
-            '//*[@class="copyable-text"]'
+        messages_list = self.driver.find_element_by_xpath(
+            '//*[@id="main"]/div[3]/div/div/div[3]'
         )
-        messages = self.driver.find_elements_by_xpath(
-            '//*[@class="_1dB-m"]'
+        # every first layer sub elements
+        tmp_messages = reversed(
+            messages_list.find_elements_by_xpath('//*[@class="tSmQ1"]')[0].find_elements_by_xpath("./*")
         )
-
-        for label, message in zip(reversed(labels), reversed(messages)):
-            current_msg = message.text.splitlines()[:-1]
-            if self.ascii_chat_name in current_msg:
-                current_msg.remove(self.ascii_chat_name)
-
-            if self.personal_alias in label.get_attribute('data-pre-plain-text') or \
-                    self.ascii_personal_alias in label.get_attribute('data-pre-plain-text'):
-                print(current_msg)
-                # break
-            else:
-                print(current_msg)
-                # text message (text - timestamp)
-                if len(current_msg) == 2:
-                    self.messages.append(current_msg[0])
-                    # self.timestamps.append(current_msg[0])
-                    self.replies.append("")
-                elif len(current_msg) == 4:
-                    self.messages.append(current_msg[2])
-                    # self.timestamps.append(current_msg[3])
-                    self.replies.append(current_msg[1])
+        # get only the received messages before the last sent message
+        for message in tmp_messages:
+            if "message-out" in message.get_attribute("class"):
+                break
+            self.messages.append(message.text.splitlines()[:-1])
 
     def close(self):
         self.driver.close()

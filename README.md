@@ -5,7 +5,7 @@ While playing is really hard to get distracted by your smartphone. As a result, 
 able to check the messages on messaging services like WhatsApp. <br>
 However, you can still receive a message from a friend inside the League's client (from a 
 RiotGames account), and it will be shown in game. You can also reply to that message directly
-from the match (by typing in the chat /r "name of the account" your message). <br>
+from the match (by typing in the chat /msg "name of the account" your message). <br>
 The purpose of this script is to allow the reception (real-time) and response of the messages
 from a WhatsApp contact during a League of Legends match.
 

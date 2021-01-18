@@ -74,6 +74,7 @@ class MessagesParser(object):
     """
     def get_messages(self):
         time.sleep(3)
+        # TODO: sometimes this does not work (maybe now it's working, do more tests)
         messages_list = self.driver.find_element_by_xpath(
             '/html/body/div[1]/div/div/div[4]/div/div[3]/div/div'
         )

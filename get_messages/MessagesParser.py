@@ -4,6 +4,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import NoSuchElementException
 import time
 import sys
 
@@ -48,10 +49,33 @@ class MessagesParser(object):
         self.last_message = None
         self.replies = []
 
+    """
+    Possible messages:
+        length 0:
+            - image
+        length 1:
+            - text message
+            - video (length)
+            - sticker (if the text is empty)
+        length 2:
+            - vocal message (index 0 = length)
+        length 3:
+            - index 0 = sender of the message he / she is replying to (should be me)
+            - index 1 = message he / she is replying to
+            - index 2 = text (if the text is empty, it's an image)
+        length 4:
+            - index 0 = sender of the message he / she is replying to (should be the contact)
+            - index 1 = message he / she is replying to
+            - index 2 = text
+            - index 3 = name
+        length n:
+            - if index 0 =/= 'You' or ascii_chat_name or is not a length (or 2nd index is not ''), then it's a message
+              with emojis
+    """
     def get_messages(self):
         time.sleep(3)
         messages_list = self.driver.find_element_by_xpath(
-            '//*[@id="main"]/div[3]/div/div/div[3]'
+            '/html/body/div[1]/div/div/div[4]/div/div[3]/div/div'
         )
         # every first layer sub elements
         tmp_messages = reversed(
@@ -61,7 +85,21 @@ class MessagesParser(object):
         for message in tmp_messages:
             if "message-out" in message.get_attribute("class"):
                 break
-            self.messages.append(message.text.splitlines()[:-1])
+            # empty = image or sticker or video
+            emoji = None
+            for el in message.find_elements_by_xpath(".//*"):
+                try:
+                    emoji = str(el.find_element_by_tag_name('img').get_attribute("alt"))
+                    break
+                except NoSuchElementException:
+                    continue
+            tmp_list = message.text.splitlines()[:-1]
+            if emoji is not None:
+                tmp_list.append(emoji)
+                self.messages.append(tmp_list)
+            else:
+                self.messages.append(tmp_list)
+        print(self.messages)
 
     def close(self):
         self.driver.close()

@@ -9,7 +9,7 @@ import time
 import sys
 
 
-class MessagesParser(object):
+class WhatsAppParser(object):
     def __init__(self, chat_name, personal_alias):
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument("--start-maximized")
@@ -100,7 +100,8 @@ class MessagesParser(object):
                 self.messages.append(tmp_list)
             else:
                 self.messages.append(tmp_list)
-        print(self.messages)
+
+        return self.messages
 
     def close(self):
         self.driver.close()

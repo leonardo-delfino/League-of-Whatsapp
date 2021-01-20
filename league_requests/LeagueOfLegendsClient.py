@@ -59,7 +59,7 @@ class LeagueOfLegendsClient(object):
         lockfile.close()
         lockfile_list = lockfile_data.split(":")
         # wait for the client (if the user has just logged in, for example, there is a bit delay)
-        time.sleep(10)
+        time.sleep(1)
         self.process_name, self.process_pid, self.port, self.__password, self.protocol = lockfile_list
 
         username_password = b64encode(bytes('%s:%s' % (self.__username, self.__password), 'utf-8')).decode('ascii')
@@ -72,8 +72,6 @@ class LeagueOfLegendsClient(object):
     """
     def __wait_login_session(self):
         while True:
-            time.sleep(1)
-
             r = self.__request('get', '/lol-login/v1/session')
             if r.status_code != 200:
                 print("[-] Error -- {}".format(r.status_code))
@@ -84,7 +82,6 @@ class LeagueOfLegendsClient(object):
                 return r.json()['summonerId']
 
     def send_message(self, message):
-        time.sleep(1)
         summoner_id = self.__wait_login_session()
 
         r = self.__request('get', '/lol-chat/v1/conversations')

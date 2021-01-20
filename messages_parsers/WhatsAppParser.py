@@ -1,12 +1,14 @@
-from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
-from selenium.common.exceptions import WebDriverException
-from selenium.common.exceptions import TimeoutException
-from selenium.common.exceptions import NoSuchElementException
-import time
 import sys
+import time
+
+from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 class WhatsAppParser(object):
@@ -17,6 +19,7 @@ class WhatsAppParser(object):
         chrome_options.add_argument("--incognito")
         chrome_options.add_argument("--log-level=3")
 
+        # TODO: fix the timeout (whatsapp login)
         try:
             self.driver = webdriver.Chrome(options=chrome_options)
         except WebDriverException:
@@ -46,8 +49,13 @@ class WhatsAppParser(object):
         contact.click()
 
         self.messages = []
-        self.last_message = None
-        self.replies = []
+        self.last_message = -1
+        self.last_timestamp = -1
+
+        self.MAX_MESSAGES = 5
+
+    def clear(self):
+        self.messages = []
 
     """
     Possible messages:
@@ -72,8 +80,8 @@ class WhatsAppParser(object):
             - if index 0 =/= 'You' or ascii_chat_name or is not a length (or 2nd index is not ''), then it's a message
               with emojis
     """
+
     def get_messages(self):
-        time.sleep(3)
         # TODO: sometimes this does not work (maybe now it's working, do more tests)
         messages_list = self.driver.find_element_by_xpath(
             '/html/body/div[1]/div/div/div[4]/div/div[3]/div/div'
@@ -83,23 +91,64 @@ class WhatsAppParser(object):
             messages_list.find_elements_by_xpath('//*[@class="tSmQ1"]')[0].find_elements_by_xpath("./*")
         )
         # get only the received messages before the last sent message
-        for message in tmp_messages:
-            if "message-out" in message.get_attribute("class"):
-                break
-            # empty = image or sticker or video
-            emoji = None
-            for el in message.find_elements_by_xpath(".//*"):
-                try:
-                    emoji = str(el.find_element_by_tag_name('img').get_attribute("alt"))
+        flag_timestamp = False
+        timestamp = -1
+        n_messages = 0
+        try:
+            for message in tmp_messages:
+                if "message-out" in message.get_attribute("class"):
                     break
-                except NoSuchElementException:
+                # empty = image or sticker or video
+                emoji = None
+                for el in message.find_elements_by_xpath(".//*"):
+                    # get the timestamp of the last message
+                    if not flag_timestamp:
+                        try:
+                            timestamp = el.find_element_by_class_name("_2JNr-").text
+                            flag_timestamp = True
+                        except NoSuchElementException:
+                            pass
+                    # check if there is one ore more emojis
+                    try:
+                        emoji = str(el.find_element_by_tag_name('img').get_attribute("alt"))
+                        break
+                    except NoSuchElementException:
+                        continue
+
+                flag_timestamp = False
+                n_messages += 1
+                tmp_list = message.text.splitlines()[:-1]
+                if not tmp_list:
                     continue
-            tmp_list = message.text.splitlines()[:-1]
-            if emoji is not None:
-                tmp_list.append(emoji)
-                self.messages.append(tmp_list)
-            else:
-                self.messages.append(tmp_list)
+
+                if emoji is not None:
+                    tmp_list.append(emoji)
+                    if tmp_list == self.last_message and timestamp == self.last_timestamp:
+                        break
+                    self.messages.append((tmp_list, timestamp))
+                else:
+                    if tmp_list == self.last_message and timestamp == self.last_timestamp:
+                        break
+                    self.messages.append((tmp_list, timestamp))
+                # set the max number of messages
+                if n_messages == self.MAX_MESSAGES:
+                    break
+        except StaleElementReferenceException:
+            print("[*] The user is spamming. Delay of 10 seconds.")
+            # reset everything
+            self.last_timestamp = -1
+            self.last_message = -1
+            time.sleep(10)
+            return []
+
+        if not self.messages:
+            return self.messages
+
+        if self.last_timestamp == self.messages[0][1] and self.last_message == self.messages[0][0]:
+            self.messages = []
+        else:
+            self.last_message = self.messages[0][0]
+            self.last_timestamp = self.messages[0][1]
 
         return self.messages
 

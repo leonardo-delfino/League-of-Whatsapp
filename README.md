@@ -43,8 +43,8 @@ Whatsapp is finished.
  * ~~Get the input and convert it to ASCII;~~
  * ~~Get the text messages from the user until your last one;~~
  * ~~Get also the images and the vocal messages;~~
- * Send the messages to a RiotGames account;
- * Send the messages from the RiotGames account to your personal account;
+ * ~~Send the messages to a RiotGames account;~~
+ * ~~Send the messages from the RiotGames account to your personal account;~~
  * Reply to the messages directly from the match;
  * Send the messages from the RiotGames account back to the WhatsApp contact.
 

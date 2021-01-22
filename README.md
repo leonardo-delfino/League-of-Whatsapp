@@ -49,4 +49,4 @@ Whatsapp is finished.
  * Send the messages from the RiotGames account back to the WhatsApp contact.
 
 ## License
-[MIT license](https://choosealicense.com/licenses/mit/).
+The software has the [MIT license](https://choosealicense.com/licenses/mit/). Feel free to use it or to contribute to it.
